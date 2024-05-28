@@ -2,6 +2,7 @@ package database.repository;
 
 import database.config.DatabaseConfiguration;
 import database.domain.*;
+import database.service.AuditService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +24,8 @@ public class TransactionRepository {
         }
         return instance;
     }
+
+    AuditService auditService = AuditService.getInstance();
 
     private void getTransactions(){
 
@@ -113,6 +116,8 @@ public class TransactionRepository {
                 System.out.println(transaction);
             }
         }
+
+        auditService.writeToFile("log.csv", "Userul " + bankAccount.getUserId() + " a vizualizat istoricul tranzactiilor asociate contului " + bankAccount.getIban());
     }
 
 

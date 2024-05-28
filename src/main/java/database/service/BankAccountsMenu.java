@@ -24,12 +24,15 @@ public class BankAccountsMenu {
     }
 
     BankAccountRepository ba = BankAccountRepository.getInstance();
+    AuditService auditService = AuditService.getInstance();
 
     public void showMenu(int user_id)
     {
         this.user_id = user_id;
 
         List<BankAccount> bankAccounts = ba.getBankAccountsById(user_id);
+
+        auditService.writeToFile("log.csv", "Userul " + user_id + " si-a vizualizat soldurile conturilor bancare.");
 
         System.out.println("Alegeti un cont bancar: ");
 
@@ -52,6 +55,9 @@ public class BankAccountsMenu {
     }
 
     private void showMenu(int user_id, BankAccount bankAcc) {
+
+        auditService.writeToFile("log.csv", "Userul " + user_id + " a vizualizat contul bancar " + bankAcc.toString());
+
         System.out.println(bankAcc.toString());
         System.out.println("Alege o optiune:");
         System.out.println("0. Inapoi");
@@ -110,6 +116,8 @@ public class BankAccountsMenu {
         Transaction transaction = new Deposit(tr.nextTransactionId(), bankAcc.getUserId(), bankAcc.getId(), deposit, bankAcc.getCurrencyId(), timestamp);
         tr.insertTransaction(transaction);
 
+        auditService.writeToFile("log.csv", "Userul " + user_id + " a depozitat " + deposit + " in contul bancar " + bankAcc.toString());
+
     }
 
     private void withdraw(BankAccount bankAcc){
@@ -142,6 +150,9 @@ public class BankAccountsMenu {
 
             Transaction transaction = new Withdrawal(tr.nextTransactionId(), bankAcc.getUserId(), bankAcc.getId(), withdraw, bankAcc.getCurrencyId(),timestamp);
             tr.insertTransaction(transaction);
+
+            auditService.writeToFile("log.csv", "Userul " + user_id + " a retras " + withdraw + " in contul bancar " + bankAcc.toString());
+
         }
         else
             System.out.println("Fonduri insuficiente.");
@@ -191,6 +202,9 @@ public class BankAccountsMenu {
 
         transaction = new Transfer(tr.nextTransactionId(), destination.getUserId(), destination.getId(), amount_after, destination.getCurrencyId(),timestamp);
         tr.insertTransaction(transaction);
+
+        auditService.writeToFile("log.csv", "Userul " + user_id + " a transferat " + amount + " din contul bancar " + bankAcc.getIban() + " in contul bancar " + destination.getIban());
+
 
         // audit si aici
     }

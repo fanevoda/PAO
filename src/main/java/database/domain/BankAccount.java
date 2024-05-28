@@ -56,6 +56,10 @@ public class BankAccount {
         return balance;
     }
 
+    public String getIban(){
+        return iban;
+    }
+
     public double transfer(BankAccount to, double amount) {
         addToBalance(-amount);
 

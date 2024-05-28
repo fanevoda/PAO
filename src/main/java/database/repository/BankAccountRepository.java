@@ -3,6 +3,7 @@ package database.repository;
 import database.config.DatabaseConfiguration;
 import database.domain.BankAccount;
 import database.domain.Currency;
+import database.service.AuditService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,6 +17,7 @@ public class BankAccountRepository {
     Map<Integer, BankAccount> bankAccountMap = new HashMap<Integer, BankAccount>();
 
     CurrencyRepository cr = CurrencyRepository.getInstance();
+    AuditService auditService = AuditService.getInstance();
 
     private static BankAccountRepository instance;
 
@@ -73,6 +75,8 @@ public class BankAccountRepository {
             // nu uita audit
 
             System.out.println("Am adaugat un cont bancar cu ibanul " + iban + " avand ca valuta " + currency_id);
+
+            auditService.writeToFile("log.csv", "Userul " + user_id + "a creat un nou cont bancar cu ibanul " + iban + " avand ca valuta " + currency_id);
         }catch(SQLException e)
         {
             e.printStackTrace();

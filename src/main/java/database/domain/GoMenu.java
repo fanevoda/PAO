@@ -2,6 +2,7 @@ package database.domain;
 
 import database.repository.BankAccountRepository;
 import database.repository.UserRepository;
+import database.service.AuditService;
 import database.service.BankAccountsMenu;
 
 import java.util.Scanner;
@@ -10,6 +11,8 @@ public class GoMenu {
 
     private int user_id;
     private static GoMenu instance;
+
+    AuditService auditService = AuditService.getInstance();
 
     Scanner sc = new Scanner(System.in);
     UserRepository ur = UserRepository.getInstance();
@@ -53,6 +56,7 @@ public class GoMenu {
             switch (option) {
                 case 0:
                     exitProgram();
+                    auditService.writeToFile("log.csv", "Userul " + user_id + " a inchis programul.");
                     break;
                 case 1:
                     changePass();
@@ -90,6 +94,7 @@ public class GoMenu {
 
     private void showBankAccounts()
     {
+
         baMenu.showMenu(user_id);
     }
 

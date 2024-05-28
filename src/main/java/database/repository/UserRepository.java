@@ -1,6 +1,7 @@
 package database.repository;
 
 import database.config.DatabaseConfiguration;
+import database.service.AuditService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class UserRepository {
+
 
     private static UserRepository instance;
     public static UserRepository getInstance() {
@@ -20,6 +22,7 @@ public class UserRepository {
 
     private UserRepository(){};
 
+    AuditService auditService = AuditService.getInstance();
 
     public int login() {
         int tries = 4;
@@ -35,8 +38,11 @@ public class UserRepository {
 
             int id = checkAccount(username, password);
 
-            if (id >= 0)
+            if (id >= 0) {
+                auditService.writeToFile("log.csv", "S-a autentificat " + username);
+
                 return id;
+            }
             else
                 tries--;
 
@@ -75,6 +81,8 @@ public class UserRepository {
 
             System.out.println("Login reusit.");
 
+            // audit creat cont
+            auditService.writeToFile("log.csv", "A fost creat contul " + username + ":" + password);
             return true;
         }
         System.out.println("Ati depasit numarul de 4 incercari.");
@@ -158,6 +166,9 @@ public class UserRepository {
 
             if (rowsAffected > 0)
                 System.out.println("Password changed to " + password);
+
+            auditService.writeToFile("log.csv", "Userul " + id + " si-a schimbat parola.");
+
 
         }catch(SQLException e)
         {
